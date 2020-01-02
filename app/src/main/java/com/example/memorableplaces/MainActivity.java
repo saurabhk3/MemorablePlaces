@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ListView listView = findViewById(R.id.listView);
+
 
 
         SharedPreferences sharedPreferences = this.getSharedPreferences("com.example.memorableplaces", Context.MODE_PRIVATE);
@@ -50,16 +50,14 @@ public class MainActivity extends AppCompatActivity {
                 for(int i=0;i<places.size();i++){
                     locations.add(new LatLng(Double.parseDouble(latitudes.get(i)),Double.parseDouble(longitudes.get(i))));
                 }
-
             }
         }else{
             places.add("Add a new Place...");
-            LatLng temp = new LatLng(0,0);
-            locations.add(temp);
+            locations.add(new LatLng(0,0));
         }
 
 
-
+        ListView listView = findViewById(R.id.listView);
         arrayAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,places);
         listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
