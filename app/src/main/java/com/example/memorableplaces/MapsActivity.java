@@ -68,7 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             LatLng userLoc = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions().position(userLoc).title(title).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc,13));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc,10));
         }
     }
 
@@ -101,41 +101,49 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setOnMapLongClickListener(this);
-        lmanager = (LocationManager)getSystemService(LOCATION_SERVICE);
-        listener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                centerOnMap(location,"CurrentLoc");
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
-        if(Build.VERSION.SDK_INT < 23){
-            lmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,listener);
-        }
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION )!= PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
-        }else{
-            lmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,listener);
-            Location lastKnownLoc = lmanager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            centerOnMap(lastKnownLoc,"Your Last Location");
-        }
-
         Intent intent = getIntent();
-        Toast.makeText(this,Integer.toString(intent.getIntExtra("placeIndex",0)),Toast.LENGTH_SHORT).show();
+        mMap.setOnMapLongClickListener(this);
+        if(intent.getIntExtra("placeIndex",0)==0) { // if it's the first object i.e. no location has been added
+            lmanager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            listener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    centerOnMap(location, "CurrentLoc");
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+            };
+            if (Build.VERSION.SDK_INT < 23) {
+                lmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            } else {
+                lmanager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+                Location lastKnownLoc = lmanager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                centerOnMap(lastKnownLoc, "Your Last Location");
+            }
+        }else{// if some location exists in the list
+            Location placeLoc = new Location(LocationManager.GPS_PROVIDER);
+            placeLoc.setLatitude(MainActivity.locations.get(intent.getIntExtra("placeIndex",0)).latitude);
+            placeLoc.setLongitude(MainActivity.locations.get(intent.getIntExtra("placeIndex",0)).longitude);
+            centerOnMap(placeLoc,MainActivity.places.get(intent.getIntExtra("placeIndex",0)));
+
+        }
+
+
     }
 }

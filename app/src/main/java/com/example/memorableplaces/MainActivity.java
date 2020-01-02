@@ -35,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
-                intent.putExtra("placeIndex",position);
-                Toast.makeText(MainActivity.this,Integer.toString(position),Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                intent.putExtra("placeIndex", position);
                 startActivity(intent);
             }
         });
