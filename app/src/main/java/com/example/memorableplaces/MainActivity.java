@@ -1,8 +1,10 @@
 package com.example.memorableplaces;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     static ArrayAdapter<String> arrayAdapter;
     static ArrayList<String> places = new ArrayList<>();
     static ArrayList<LatLng> locations = new ArrayList<LatLng>();
+    ArrayList<String> latitudes = new ArrayList<>();
+    ArrayList<String> longitudes = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         SharedPreferences sharedPreferences = this.getSharedPreferences("com.example.memorableplaces", Context.MODE_PRIVATE);
-        ArrayList<String> latitudes = new ArrayList<>();
-        ArrayList<String> longitudes = new ArrayList<>();
+
 
         places.clear();
         latitudes.clear();
@@ -67,6 +70,27 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                 intent.putExtra("placeIndex", position);
                 startActivity(intent);
+            }
+        });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setIcon(android.R.drawable.ic_delete)
+                        .setMessage("Do you want it to remove from your favourite list?")
+                        .setTitle("Are You Sure!?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                places.remove(position);
+                                locations.remove(position);
+                                latitudes.remove(position);
+                                longitudes.remove(position);
+                                arrayAdapter.notifyDataSetChanged();
+                            }
+                        }).setNegativeButton("No",null).show();
+
+                return false;
             }
         });
 
